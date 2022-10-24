@@ -18,33 +18,42 @@ public class Main {
         UserTransactionService userTransactionService = new UserTransactionService(clanService, transactionsRepository);
         // completed setup
 
-        // game starts
+        //game starts
         Clan punks = clanService.createClan("punks");
         Clan raiders = clanService.createClan("raiders");
         Clan prists = clanService.createClan("prists");
         Clan yankees = clanService.createClan("yankees");
         Clan faggots = clanService.createClan("faggots");
 
-        // multiple users update the clan's gold simultaneously
+        updateGoldConcurrently(userTransactionService, punks);
+    }
+
+    /**
+     * Multiple users update clan's gold simultaneously
+     * 
+     * @param userTransactionService
+     * @param clan
+     */
+    private static void updateGoldConcurrently(UserTransactionService userTransactionService, Clan clan) {
         Runnable user1Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 1 executing..");
-            userTransactionService.takeGoldFromClan(userId, punks.getId(), 100);
+            userTransactionService.takeGoldFromClan(userId, clan.getId(), 100);
         };
         Runnable user2Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 2 executing..");
-            userTransactionService.addGoldToClan(userId, punks.getId(), 100);
+            userTransactionService.addGoldToClan(userId, clan.getId(), 100);
         };
         Runnable user3Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 3 executing..");
-            userTransactionService.takeGoldFromClan(userId, punks.getId(), 100);
+            userTransactionService.takeGoldFromClan(userId, clan.getId(), 100);
         };
         Runnable user4Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 4 executing..");
-            userTransactionService.addGoldToClan(userId, punks.getId(), 120);
+            userTransactionService.addGoldToClan(userId, clan.getId(), 120);
         };
 
         new Thread(user1Task).start();

@@ -1,7 +1,10 @@
 package data;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import models.Clan;
@@ -15,11 +18,65 @@ public class ClanRepository {
     }
 
     public Clan findById(UUID clanId) {
-        return null;
+        PreparedStatement st = null;
+        Clan clan = null;
+        try {
+            st = dataService.getConnection()
+            .prepareStatement("select * from clan where id = ?");
+            st.setObject(1, clanId);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                clan = new Clan(
+                    (UUID)rs.getObject("id"),
+                    rs.getString("name"),
+                    rs.getInt("gold"),
+                    rs.getInt("health_points"),
+                    rs.getInt("exp"));
+            };
+        } catch (Exception e) {
+            System.out.println("Failed to fetch clan with id: " + clanId);
+            e.printStackTrace();
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                    dataService.closeConnection();
+                } catch (SQLException se) {}
+            }
+        }
+        return clan;
     }
 
-    public Clan findByName(String clanName) {
-        return null;
+    public List<Clan> findByName(String clanName) {
+        PreparedStatement st = null;
+        List<Clan> clans = new ArrayList<>();
+        try {
+            st = dataService.getConnection()
+            .prepareStatement("select * from clan where name = ?");
+            st.setObject(1, clanName);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                clans.add(
+                    new Clan(
+                        (UUID)rs.getObject("id"),
+                        rs.getString("name"),
+                        rs.getInt("gold"),
+                        rs.getInt("health_points"),
+                        rs.getInt("exp"))
+                );
+            };
+        } catch (Exception e) {
+            System.out.println("Failed to fetch clans with name: " + clanName);
+            e.printStackTrace();
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                    dataService.closeConnection();
+                } catch (SQLException se) {}
+            }
+        }
+        return clans;
     }
     
     public void addGoldById(UUID clanId, int goldAmmount) {
@@ -59,6 +116,13 @@ public class ClanRepository {
         }
     }
 
+    /**
+     * Adds or subtracts clan's gold
+     * depending on positive/negative goldAmmount respectively
+     * 
+     * @param clanId
+     * @param goldAmmount
+     */
     private void updateGoldById(UUID clanId, int goldAmmount) {
         PreparedStatement statement = null;
         try {

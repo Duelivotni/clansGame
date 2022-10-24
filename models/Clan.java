@@ -60,5 +60,11 @@ public class Clan {
 
     public void setGold(int gold) {
         this.gold = gold;
+    }
+
+    @Override
+    public String toString() {
+        return "Clan [id=" + id + ", name=" + name + ", gold=" + gold + ", healthPoints=" + healthPoints + ", exp="
+                + exp + "]";
     } 
 }

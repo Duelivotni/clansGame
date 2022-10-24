@@ -1,5 +1,6 @@
 package service;
 
+import java.util.List;
 import java.util.UUID;
 
 import data.ClanRepository;
@@ -23,7 +24,7 @@ public class ClanService {
         return clanRepository.findById(clanId);    
     }
 
-    public Clan getClanByName(String clanName) {
+    public List<Clan> getClansByName(String clanName) {
         return clanRepository.findByName(clanName);
     }
 
