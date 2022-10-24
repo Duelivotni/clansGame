@@ -20,6 +20,10 @@ public class ClanService {
         return clan;
     }
 
+    public void removeClanById(UUID clanId) {
+        clanRepository.deleteById(clanId);
+    }
+
     public Clan getClanById(UUID clanId) {
         return clanRepository.findById(clanId);    
     }
@@ -28,16 +32,28 @@ public class ClanService {
         return clanRepository.findByName(clanName);
     }
 
-    public void addGoldToClan(UUID clanId, int goldAmmount) {
-        clanRepository.addGoldById(clanId, goldAmmount);
+    public synchronized void addGoldToClan(Clan clan, int goldAmmount) {
+        clan.setGold(clan.getGold() + goldAmmount);
+        clanRepository.addGoldById(clan.getId(), goldAmmount);
     }
 
-    public void takeGoldFromClan(UUID clanId, int goldAmmount) {
-        clanRepository.reduceGoldById(clanId, goldAmmount);
+    public synchronized void takeGoldFromClan(Clan clan, int goldAmmount) {
+        if (goldAmmount > clan.getGold()) {
+            throw new RuntimeException(
+                "Failed to take gold from clan with id: " + clan.getId() +
+                ": gold ammount is bigger than clan's gold available\n");
+        }
+        clan.setGold(clan.getGold() - goldAmmount);
+        clanRepository.reduceGoldById(clan.getId(), goldAmmount);
     }
 
-    public void healUp(UUID clanId) {
+    public synchronized void healUp(UUID clanId) {
         clanRepository.reduceGoldById(clanId, 50);
         clanRepository.addHealthPointsById(clanId);
+    }
+
+    public synchronized void levelUp(Clan clan, int exp) {
+        clan.setExp(clan.getExp() + exp);
+        clanRepository.updateExp(clan.getId(), exp);
     }
 }

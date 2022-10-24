@@ -5,6 +5,7 @@ import data.DataService;
 import data.TransactionsRepository;
 import models.Clan;
 import service.ClanService;
+import service.TaskService;
 import service.UserTransactionService;
 
 public class Main {
@@ -15,6 +16,7 @@ public class Main {
         ClanRepository clanRepository = new ClanRepository(dataService);
         TransactionsRepository transactionsRepository = new TransactionsRepository(dataService);
         ClanService clanService = new ClanService(clanRepository);
+        TaskService taskService = new TaskService(clanService);
         UserTransactionService userTransactionService = new UserTransactionService(clanService, transactionsRepository);
         // completed setup
 
@@ -26,6 +28,11 @@ public class Main {
         Clan faggots = clanService.createClan("faggots");
 
         updateGoldConcurrently(userTransactionService, punks);
+
+        taskService.fightClan(punks, faggots); // must be a draw
+        taskService.fightClan(punks, prists); // punks gained exp and must win prists
+        taskService.fightClan(punks, faggots); // skilled punks come back to faggots and finish'em up
+        taskService.stealGold(punks, yankees, 40); // punks steal gold
     }
 
     /**
@@ -38,22 +45,22 @@ public class Main {
         Runnable user1Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 1 executing..");
-            userTransactionService.takeGoldFromClan(userId, clan.getId(), 100);
+            userTransactionService.takeGoldFromClan(userId, clan, 300);
         };
         Runnable user2Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 2 executing..");
-            userTransactionService.addGoldToClan(userId, clan.getId(), 100);
+            userTransactionService.addGoldToClan(userId, clan, 100);
         };
         Runnable user3Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 3 executing..");
-            userTransactionService.takeGoldFromClan(userId, clan.getId(), 100);
+            userTransactionService.takeGoldFromClan(userId, clan, 200);
         };
         Runnable user4Task = () -> {
             UUID userId = UUID.randomUUID();
             System.out.println("thread 4 executing..");
-            userTransactionService.addGoldToClan(userId, clan.getId(), 120);
+            userTransactionService.addGoldToClan(userId, clan, 120);
         };
 
         new Thread(user1Task).start();

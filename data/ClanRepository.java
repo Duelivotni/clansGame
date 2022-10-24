@@ -145,5 +145,50 @@ public class ClanRepository {
             }
         }
     }
+
+    public void deleteById(UUID clanId) {
+        PreparedStatement statement = null;
+        try {
+            System.out.println("Removing clan with id: " + clanId);
+            statement = dataService.getConnection().prepareStatement("delete from clan where id = ?");
+            statement.setObject(1, clanId);
+            statement.executeUpdate();
+            System.out.println("Clan with id [" + clanId + "] has been removed");
+
+        } catch (Exception e) {
+            System.out.println("Failed to remove clan with id: " + clanId);
+            e.printStackTrace();
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                    dataService.closeConnection();
+                } catch (SQLException sq) {}
+            }
+        }
+    }
+
+    public void updateExp(UUID clanId, int exp) {
+        PreparedStatement statement = null;
+        try {
+            System.out.println("Updating Exp for clan with id: " + clanId);
+            statement = dataService.getConnection().prepareStatement("update clan set exp = exp + ? where id = ?");
+            statement.setInt(1, exp);
+            statement.setObject(2, clanId);
+            statement.executeUpdate();
+            System.out.println("Updated " + exp + " Exp for clan with id: " + clanId);
+
+        } catch (Exception e) {
+            System.out.println("Failed to update Exp for clan with id: " + clanId);
+            e.printStackTrace();
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                    dataService.closeConnection();
+                } catch (SQLException sq) {}
+            }
+        }
+    }
 }   
 

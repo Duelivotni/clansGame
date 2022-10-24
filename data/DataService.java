@@ -51,6 +51,7 @@ public class DataService {
                 "clan_id uuid not null, " +
                 "gold_ammount integer not null, " +
                 "transaction_type varchar(100) not null, " +
+                "transaction_status varchar(100) not null, " +
                 "date_time timestamp default current_timestamp() not null)"
             );
             System.out.println("Tables have been created");

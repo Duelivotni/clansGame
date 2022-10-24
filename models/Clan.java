@@ -2,13 +2,15 @@ package models;
 
 import java.util.UUID;
 
+import properties.GameProperties;
+
 public class Clan {
 
     private UUID id;     
     private String name;
-    private int gold;
-    private int healthPoints;
-    private int exp;
+    private volatile int gold;
+    private volatile int healthPoints;
+    private volatile int exp;
     
     public Clan(UUID id, String name, int gold, int healthPoints, int exp) {
         this.id = id;
@@ -20,10 +22,10 @@ public class Clan {
 
     public Clan(String name) {
         this.id = UUID.randomUUID();
-        this.healthPoints = 100;
-        this.exp = 0;
+        this.healthPoints = GameProperties.NEW_CLAN_HEALTH_POINTS;
+        this.exp = GameProperties.NEW_CLAN_EXP;
         this.name = name;
-        this.gold = 100;
+        this.gold = GameProperties.NEW_CLAN_GOLD;
     }
 
     public int getHealthPoints() {
