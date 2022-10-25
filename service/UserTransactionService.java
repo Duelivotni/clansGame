@@ -23,7 +23,7 @@ public class UserTransactionService {
     }
     
     /**
-     * Adds gold and saves transaction
+     * Takes gold and saves transaction
      * Sets up transaction status 'Failed' if no success subtracting clan's gold
      * 
      * @param userId
